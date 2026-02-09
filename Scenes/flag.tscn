@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cr2uv6nknnosa"]
+
+[ext_resource type="Script" uid="uid://bo4mkuhacvgmv" path="res://Scripts/flag.gd" id="1_vie08"]
+[ext_resource type="Texture2D" uid="uid://by1kjp62ppxql" path="res://Sprites/Objects/tile_0112.png" id="2_cnecg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lsmp6"]
+radius = 8.0
+
+[node name="Flag" type="Area2D" unique_id=1316697073]
+script = ExtResource("1_vie08")
+
+[node name="flagsprite" type="Sprite2D" parent="." unique_id=1518992966]
+position = Vector2(1066, 0)
+texture = ExtResource("2_cnecg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2105061834]
+position = Vector2(1066, -2)
+shape = SubResource("CircleShape2D_lsmp6")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
