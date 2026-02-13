@@ -8,6 +8,9 @@ extends CharacterBody2D
 @export var health: int = 3
 @onready var sprite : Sprite2D = $Sprite
 @onready var anim: AnimationPlayer = $AnimationPlayer
+@onready var audio: AudioStreamPlayer = $AudioStreamPlayer2D
+var take_damage_sfx : AudioStream = preload("res://Audio/take_damage.wav")
+var take_coin_sfx : AudioStream = preload("res://Audio/coin.wav")
 var move_input : float
 
 #this callback only works when some action is done. 
@@ -42,8 +45,10 @@ func _manage_animation():
 	else:
 		anim.play("idle")	
 		#print("iddle")
+
 func take_damage(amount: int):
 	health -= amount
+	play_sound(take_damage_sfx)
 	
 	if health <= 0:
 		call_deferred("game_over")
@@ -52,4 +57,8 @@ func game_over():
 func increase_score(amount: int):
 	PlayerStats.score +=amount	
 	print(PlayerStats.score)
+	play_sound(take_coin_sfx)
+func play_sound(sound: AudioStream):
+	audio.stream = sound
+	audio.play()			
 			

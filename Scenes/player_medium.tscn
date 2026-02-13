@@ -3,6 +3,9 @@
 [ext_resource type="Script" uid="uid://ceqjcrkrrlc5g" path="res://Scripts/player_medium.gd" id="1_85qn0"]
 [ext_resource type="Texture2D" uid="uid://pffu8wq43n2d" path="res://Sprites/Characters/character_0001.png" id="2_mr46x"]
 [ext_resource type="Texture2D" uid="uid://b35uohgollby0" path="res://Sprites/Characters/character_0000.png" id="3_k8dxl"]
+[ext_resource type="Script" uid="uid://btyfgmcpfw0cl" path="res://Scripts/camera_shake.gd" id="3_m4xep"]
+[ext_resource type="Script" uid="uid://c5wrc5tux0l67" path="res://Scripts/player_ui.gd" id="4_k8dxl"]
+[ext_resource type="Texture2D" uid="uid://cg8buscwh0eae" path="res://Sprites/Objects/tile_0044.png" id="4_mr46x"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_cvnsp"]
 height = 24.0
@@ -90,8 +93,41 @@ shape = SubResource("CapsuleShape2D_cvnsp")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1636478328]
 offset = Vector2(0, -30)
 zoom = Vector2(3, 3)
+script = ExtResource("3_m4xep")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=653773766]
 libraries/ = SubResource("AnimationLibrary_3smsa")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1417526185]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=782469357]
+script = ExtResource("4_k8dxl")
+
+[node name="HeartContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=1208570]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Heart1" type="TextureRect" parent="CanvasLayer/HeartContainer" unique_id=2111279001]
+layout_mode = 2
+texture = ExtResource("4_mr46x")
+expand_mode = 2
+
+[node name="Heart2" type="TextureRect" parent="CanvasLayer/HeartContainer" unique_id=1635057771]
+layout_mode = 2
+texture = ExtResource("4_mr46x")
+expand_mode = 2
+
+[node name="Heart3" type="TextureRect" parent="CanvasLayer/HeartContainer" unique_id=1331166371]
+layout_mode = 2
+texture = ExtResource("4_mr46x")
+expand_mode = 2
+
+[node name="ScoreText" type="Label" parent="CanvasLayer" unique_id=766983334]
+offset_left = 9.0
+offset_top = 56.0
+offset_right = 84.0
+offset_bottom = 79.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_constants/shadow_outline_size = 3
+theme_override_font_sizes/font_size = 38
+text = "Score:500"

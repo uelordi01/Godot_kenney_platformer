@@ -1,5 +1,6 @@
 extends CharacterBody2D
-
+signal OnUpdateHealth( health: int)
+signal OnUpdateScore(score: int)
 @export var move_speed : float = 100
 @export var acceleration: float = 50 
 @export var braking: float = 20
@@ -39,6 +40,8 @@ func _physics_process(delta: float) -> void:
 func _process(delta: float) -> void:
 	if velocity.x != 0:
 		sprite.flip_h = velocity.x > 0
+	if global_position.y > 200:
+		game_over()	
 	_manage_animation()	
 func _manage_animation():
 	if not is_on_floor():
@@ -51,12 +54,18 @@ func _manage_animation():
 		#print("iddle")
 func take_damage(amount: int):
 	health -= amount
+	OnUpdateHealth.emit(health)
 	
 	if health <= 0:
 		call_deferred("game_over")
 func game_over():
-	get_tree().change_scene_to_file("res://Scenes/level_1.tscn")	
+	get_tree().change_scene_to_file(get_tree().current_scene.scene_file_path)	
 func increase_score(amount: int):
 	PlayerStats.score +=amount	
+	OnUpdateScore.emit(PlayerStats.score)
 	print(PlayerStats.score)
 			
+func _damage_flash():
+	sprite.modulate = Color.RED		
+	await get_tree().create_timer(0.05).timeout
+	sprite.modulate = Color.WHITE	
