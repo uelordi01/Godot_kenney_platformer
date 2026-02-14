@@ -1,42 +1,56 @@
 extends CharacterBody2D
-signal OnUpdateHealth( health: int)
+
+signal OnUpdateHealth(health: int)
 signal OnUpdateScore(score: int)
-@export var move_speed : float = 100
+
+@export var move_speed: float = 100
 @export var acceleration: float = 50 
 @export var braking: float = 20
 @export var gravity: float = 500
-@export var jump_force : float = 200
+@export var jump_force: float = 200
 @export var health: int = 3
-@onready var sprite : Sprite2D = $Sprite
+
+@export var max_jumps: int = 2  # 2 = normal + double jump
+
+@onready var sprite: Sprite2D = $Sprite
 @onready var anim: AnimationPlayer = $AnimationPlayer
-var move_input : float
-var is_jumping: int = 0
+@onready var camera:Camera2D= $Camera2D
+var move_input: float
+var move_input_down_up: float
+var jumps_done: int = 0
+var acceleration_running_extra: int = 1
+var accelerate: int = 2
+var not_accelerate: int = 1
 
-#this callback only works when some action is done. 
 func _physics_process(delta: float) -> void:
-		# we apply when we are not in the floor
+	# gravity
 	if not is_on_floor():
-		velocity.y += gravity*delta
+		velocity.y += gravity * delta
 	else:
-		is_jumping = 0	
-	move_input = Input.get_axis("move_left","move_right")
-	# lerp function is a linear interpolation funcction
-	#get the move of the input (so is the current movement, the other range and the interpolation formula))
-	if move_input != 0:
-		velocity.x = lerp(velocity.x, move_input*move_speed, acceleration*delta)
-	else:
-		velocity.x = lerp(velocity.x, 0.0, braking*delta)
+		jumps_done = 0  # reset jumps when touching the floor
 
-	#now for jumping
-	if Input.is_action_pressed("jump") and is_on_floor():
-		if is_jumping==1:
-			velocity.y = -jump_force*2
-		else:	
-			velocity.y = -jump_force
-		is_jumping = 1
-		
+	# horizontal movement
+	move_input_down_up = Input.is_action_pressed("move_down")
+	if move_input_down_up:
+		camera.offset.y = lerp(-30.0, 0.0, 1.0)
+	else:
+		camera.offset.y = lerp(0.0, -30.0, 1.0)
+	if Input.is_action_pressed("accelerate"):
+		acceleration_running_extra =	accelerate
+	else:
+		acceleration_running_extra = not_accelerate	
+	move_input = Input.get_axis("move_left", "move_right")
+	if move_input != 0.0:
+		velocity.x = lerp(velocity.x, move_input * move_speed*acceleration_running_extra, acceleration * delta)
+	else:
+		velocity.x = lerp(velocity.x, 0.0, acceleration_running_extra*braking * delta)
+
+	# jumping (single + double)
+	if Input.is_action_just_pressed("jump") and jumps_done < max_jumps:
+		velocity.y = -jump_force
+		jumps_done += 1
+
 	move_and_slide()
-# process function works allways for each frame. 	
 func _process(delta: float) -> void:
 	if velocity.x != 0:
 		sprite.flip_h = velocity.x > 0
@@ -68,4 +82,4 @@ func increase_score(amount: int):
 func _damage_flash():
 	sprite.modulate = Color.RED		
 	await get_tree().create_timer(0.05).timeout
-	sprite.modulate = Color.WHITE	
+	sprite.modulate = Color.WHITE
